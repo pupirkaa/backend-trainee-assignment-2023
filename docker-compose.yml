@@ -1,0 +1,19 @@
+services:
+  web:
+    image: app
+    build: "."
+    ports:
+      - "8000:80"
+    environment:
+      DATABASE_URL: "host=db user=pupirka password=1234 database=pupirka"
+    depends_on:
+      - db
+  
+  db:
+      image: postgres
+      restart: always
+      ports:
+        - "5432:5432"
+      environment:
+        POSTGRES_PASSWORD: "1234"
+        POSTGRES_USER: "pupirka"
