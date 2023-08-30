@@ -17,7 +17,7 @@ type SegmentStorage interface {
 var (
 	//для этой ошибки выводить какой сегмент не был найден
 	ErrSegmentNotFound             = errors.New("can't find the segment")
-	ErrSegmentIsAlreadyExists      = errors.New("segment with this name is already exists")
+	ErrSegmentAlreadyExists        = errors.New("segment with this name is already exists")
 	ErrUserIsAlreadyHasThisSegment = errors.New("user is already has this segment")
 	//для этой ошибки выводить какого семента не было у пользователя
 	ErrUserHaveNotThisSegment = errors.New("user doesn't have this segment")

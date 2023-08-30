@@ -48,7 +48,7 @@ func (c *Controller) CreateSegment(w http.ResponseWriter, req *http.Request) {
 	err = c.SegmentService.CreateSegment(req.Context(), body.Segment)
 	if err != nil {
 		var resp []byte
-		if errors.Is(err, domain.ErrSegmentIsAlreadyExists) {
+		if errors.Is(err, domain.ErrSegmentAlreadyExists) {
 			resp, _ = json.Marshal(map[string]string{"error": "segment with this name is already exists"})
 			_, err = w.Write(resp)
 			if err != nil {

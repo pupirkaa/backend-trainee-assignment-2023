@@ -53,19 +53,15 @@ func main() {
 	signal.Notify(exitCh, os.Interrupt)
 
 	sqlStore := storage.NewSqlStorage(dbpool)
+	if err := sqlStore.InitDb(context.Background()); err != nil {
+		log.Error("failed to init database", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+
 	c := api.Controller{
 		SegmentService: domain.NewSegmentService(sqlStore),
 		Log:            log,
 	}
 
-	f, err := os.ReadFile("create.sql")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to exe: %v", err)
-	}
-	sql := string(f)
-	_, err = dbpool.Exec(context.Background(), sql)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to execute query: %v", err)
-	}
 	serveHttp(exitCh, log, c)
 }

@@ -3,6 +3,7 @@ package storage
 import (
 	"assignment/domain"
 	"context"
+	_ "embed"
 	"errors"
 	"fmt"
 
@@ -10,6 +11,9 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+//go:embed initial.sql
+var initialSql string
 
 type Sql struct {
 	dbpool *pgxpool.Pool
@@ -19,6 +23,14 @@ func NewSqlStorage(dbpool *pgxpool.Pool) (sql *Sql) {
 	return &Sql{dbpool: dbpool}
 }
 
+func (sql *Sql) InitDb(ctx context.Context) error {
+	if _, err := sql.dbpool.Exec(ctx, initialSql); err != nil {
+		return fmt.Errorf("failed to init db: %v", err)
+	}
+
+	return nil
+}
+
 func (sql *Sql) CreateSegment(ctx context.Context, name string) error {
 	query := "INSERT INTO segment (name) VALUES ($1);"
 
@@ -26,8 +38,8 @@ func (sql *Sql) CreateSegment(ctx context.Context, name string) error {
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
-			if pgErr.ConstraintName == "segment_pke" {
-				return domain.ErrSegmentIsAlreadyExists
+			if pgErr.ConstraintName == "segment_pkey" {
+				return domain.ErrSegmentAlreadyExists
 			}
 		}
 
