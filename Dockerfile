@@ -8,7 +8,7 @@ COPY . .
 RUN go build -o /bin/assignment ./main.go
 
 FROM scratch
-COPY create.sql .
+COPY ./storage/initial.sql .
 COPY --from=build /bin/assignment /bin/assignment
 CMD ["/bin/assignment"]
 
